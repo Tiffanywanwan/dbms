@@ -73,7 +73,7 @@ project/
 - 須先建立 MySQL 資料表與帳號，並與 `db.js` 中設定相符。
 - 請至 `db.js` 修改user, password, database名稱。
 - 初期資料表需包含 `Member`, `Club`, `ClubMember` 等表格結構。
-- 我有在github上傳一個SQL檔案 `dbms-project`，可以下載匯入table plus(建議使用相同名稱)。
+- 我有在github上傳一個SQL檔案 `dbms-project`，可以下載匯入table plus(建議使用相同名稱)。 (或在Table Plus新增"dbms-project"這個資料庫後，複製dbms-project.sql裡面的query，貼到sql editor，點Run All)
 - 測試的時候建議使用學號110306001田柾國同學的帳號登入(我幫他加了三個社團)。
 - 三大功能的子功能的命名建議參考club.html
 
