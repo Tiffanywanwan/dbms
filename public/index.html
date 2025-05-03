@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>社團總覽頁</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #e9f0f7;
+    }
+    .club-card {
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .club-card:hover {
+      transform: scale(1.02);
+      border-color: #0d6efd;
+    }
+    h4 {
+      font-weight: bold;
+      font-size: 1.4rem;
+    }
+    .form-label {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <!-- 🔹 使用者資訊列 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 id="userName">
+        <i class="bi bi-person-circle me-2"></i>您好，
+      </h4>
+      <img id="avatar" src="avatar.png" alt="頭像" style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;">
+    </div>
+
+    <!-- 🔹 學期選單 -->
+    <div class="mb-3">
+      <label for="semester" class="form-label">選擇學期</label>
+      <select id="semester" class="form-select"></select>
+    </div>
+
+    <!-- 🔹 社團列表 -->
+    <div id="clubList" class="row g-4"></div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const clubList = document.getElementById("clubList");
+      const avatar = document.getElementById("avatar");
+      const semesterSelect = document.getElementById("semester");
+
+      const studentId = localStorage.getItem("studentId");
+      const token = localStorage.getItem("token");
+
+      if (!studentId || !token) {
+        alert("請先登入");
+        window.location.href = "login.html";
+        return;
+      }
+
+      // ✅ 顯示使用者名稱
+      try {
+        const res = await fetch(`/members/${studentId}`);
+        const user = await res.json();
+        document.getElementById("userName").innerHTML = `
+          <i class="bi bi-person-circle me-2"></i>您好，${user.name}`;
+      } catch (err) {
+        console.error("載入使用者名稱失敗：", err);
+      }
+
+      avatar.addEventListener("click", () => window.location.href = "profile.html");
+
+      // 🔹 載入學期
+      async function loadSemesters() {
+        const res = await fetch(`/api/members/${studentId}/semesters`);
+        const semesters = await res.json();
+
+        semesterSelect.innerHTML = "";
+        semesters.forEach(sem => {
+          const option = document.createElement("option");
+          option.value = sem;
+          option.textContent = sem;
+          semesterSelect.appendChild(option);
+        });
+
+        if (semesters.length > 0) {
+          localStorage.setItem("currentSemester", semesters[0]);
+          await loadUserClubs(semesters[0]);
+        }
+      }
+
+      // 🔹 載入社團
+      async function loadUserClubs(selectedSemester) {
+        const res = await fetch(`/api/members/${studentId}/clubs?semester=${selectedSemester}`);
+        const clubs = await res.json();
+
+        clubList.innerHTML = "";
+
+        if (clubs.length === 0) {
+          clubList.innerHTML = `<div class="text-muted text-center">此學期沒有加入任何社團</div>`;
+          return;
+        }
+
+        clubs.forEach(club => {
+          const col = document.createElement("div");
+          col.className = "col-md-4";
+          col.innerHTML = `
+            <div class="p-4 bg-white border rounded shadow-sm club-card">
+              <h5 class="text-primary fw-bold">
+                <i class="bi bi-people-fill me-2"></i>${club.club_name}
+              </h5>
+              <p class="text-muted mb-1">
+                <i class="bi bi-hash me-1"></i>社團 ID：${club.club_id}
+              </p>
+              <button class="btn btn-outline-primary w-100 mt-2">
+                <i class="bi bi-box-arrow-in-right me-1"></i>進入社團
+              </button>
+            </div>
+          `;
+          col.querySelector("button").addEventListener("click", () => {
+            window.location.href = `club.html?clubId=${club.club_id}`;
+          });
+          clubList.appendChild(col);
+        });
+      }
+
+      // 🔹 切換學期時重新載入社團
+      semesterSelect.addEventListener("change", (e) => {
+        const selectedSemester = e.target.value;
+        localStorage.setItem("currentSemester", selectedSemester);
+        loadUserClubs(selectedSemester);
+      });
+
+      await loadSemesters();
+    });
+  </script>
+</body>
+</html>

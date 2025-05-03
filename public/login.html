@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>社團管理系統 - 登入</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap 核心與圖示 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #e9f0f7;
+    }
+    .login-container {
+      max-width: 420px;
+      margin: 100px auto;
+      padding: 2.5rem;
+      background-color: #ffffff;
+      border-radius: 1rem;
+      box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.1);
+    }
+    .login-title {
+      color: #0d6efd;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <!-- 🔹 標題 -->
+    <h2 class="text-center login-title mb-4"><i class="bi bi-box-arrow-in-right me-2"></i>社團管理系統</h2>
+
+    <!-- 🔹 登入表單 -->
+    <form id="loginForm">
+      <div class="mb-3">
+        <label for="studentId" class="form-label fw-bold"><i class="bi bi-person-fill me-2"></i>學號</label>
+        <input type="text" class="form-control" id="studentId" name="studentId" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label fw-bold"><i class="bi bi-lock-fill me-2"></i>密碼</label>
+        <input type="password" class="form-control" id="password" name="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100 fw-bold">
+        <i class="bi bi-box-arrow-in-right me-2"></i>登入
+      </button>
+    </form>
+
+    <!-- 🔹 錯誤提示 -->
+    <div id="errorMsg" class="text-danger text-center mt-3 d-none fw-bold">帳號或密碼錯誤</div>
+  </div>
+
+  <script>
+    // 🔸 登入驗證邏輯
+    document.getElementById("loginForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const student_id = document.getElementById("studentId").value;
+      const password = document.getElementById("password").value;
+
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ student_id, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        localStorage.setItem("token", data.token || "dummy");
+        localStorage.setItem("studentId", student_id);
+        window.location.href = "/index.html";
+      } else {
+        document.getElementById("errorMsg").classList.remove("d-none");
+      }
+    });
+  </script>
+</body>
+</html>
