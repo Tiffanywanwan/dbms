@@ -1,0 +1,191 @@
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+CREATE TABLE `club` (
+  `club_id` varchar(10) NOT NULL,
+  `club_name` varchar(100) NOT NULL,
+  PRIMARY KEY (`club_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `clubmember` (
+  `student_id` varchar(20) NOT NULL,
+  `club_id` varchar(10) NOT NULL,
+  `role_id` int DEFAULT NULL,
+  `join_semester` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`student_id`,`club_id`),
+  KEY `club_id` (`club_id`),
+  KEY `role_id` (`role_id`),
+  CONSTRAINT `clubmember_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `member` (`student_id`),
+  CONSTRAINT `clubmember_ibfk_2` FOREIGN KEY (`club_id`) REFERENCES `club` (`club_id`),
+  CONSTRAINT `clubmember_ibfk_3` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `member` (
+  `student_id` varchar(20) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `department` varchar(50) DEFAULT NULL,
+  `grade` enum('一','二','三','四') DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `password` varchar(50) DEFAULT NULL,
+  `emergency_contact_name` varchar(50) DEFAULT NULL,
+  `emergency_contact_phone` varchar(20) DEFAULT NULL,
+  `diet` enum('葷','素') DEFAULT NULL,
+  `join_date` date NOT NULL,
+  PRIMARY KEY (`student_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `permission` (
+  `club_id` varchar(10) NOT NULL,
+  `role_id` int NOT NULL,
+  `can_view_all_pages` tinyint(1) DEFAULT '0',
+  `can_manage_member` tinyint(1) DEFAULT '0',
+  `can_manage_asset` tinyint(1) DEFAULT '0',
+  `can_manage_finance` tinyint(1) DEFAULT '0',
+  `can_manage_permission` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`club_id`,`role_id`),
+  KEY `role_id` (`role_id`),
+  CONSTRAINT `permission_ibfk_1` FOREIGN KEY (`club_id`) REFERENCES `club` (`club_id`),
+  CONSTRAINT `permission_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `role` (
+  `role_id` int NOT NULL AUTO_INCREMENT,
+  `role_name` varchar(50) NOT NULL,
+  PRIMARY KEY (`role_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO `club` (`club_id`, `club_name`) VALUES
+('A001', '研究生學會');
+INSERT INTO `club` (`club_id`, `club_name`) VALUES
+('A002', '學生會');
+INSERT INTO `club` (`club_id`, `club_name`) VALUES
+('B001', '長廊詩社');
+INSERT INTO `club` (`club_id`, `club_name`) VALUES
+('B002', '演辯社'),
+('B005', '電影社'),
+('C004', '吉他社'),
+('C005', '管樂團'),
+('D005', '師大附中校友會'),
+('D008', '松山高中校友會'),
+('E001', '指南服務團'),
+('E019', '國際志工社'),
+('F008', '熱舞社'),
+('F014', '網球社');
+
+INSERT INTO `clubmember` (`student_id`, `club_id`, `role_id`, `join_semester`) VALUES
+('110306001', 'C004', 5, '113-2');
+INSERT INTO `clubmember` (`student_id`, `club_id`, `role_id`, `join_semester`) VALUES
+('110306001', 'E019', 1, '113-2');
+INSERT INTO `clubmember` (`student_id`, `club_id`, `role_id`, `join_semester`) VALUES
+('110306001', 'F008', 5, '113-1');
+INSERT INTO `clubmember` (`student_id`, `club_id`, `role_id`, `join_semester`) VALUES
+('111306001', 'E019', 3, '113-2'),
+('111306011', 'E019', 4, '113-2'),
+('112306065', 'E019', 2, '113-2'),
+('113306021', 'E019', 5, '113-2');
+
+INSERT INTO `member` (`student_id`, `name`, `department`, `grade`, `phone`, `email`, `password`, `emergency_contact_name`, `emergency_contact_phone`, `diet`, `join_date`) VALUES
+('110306001', '田柾國', '資管系', '四', '0901901901', 'jungkook@example.com', '110306001', '媽媽', '0987654321', '葷', '2025-04-01');
+INSERT INTO `member` (`student_id`, `name`, `department`, `grade`, `phone`, `email`, `password`, `emergency_contact_name`, `emergency_contact_phone`, `diet`, `join_date`) VALUES
+('111306001', '劉知珉', '資管系', '三', '0900411411', 'karina@example.com', '111306001', '爸爸', '0911222333', '葷', '2025-05-01');
+INSERT INTO `member` (`student_id`, `name`, `department`, `grade`, `phone`, `email`, `password`, `emergency_contact_name`, `emergency_contact_phone`, `diet`, `join_date`) VALUES
+('111306011', '金冬天', '資管系', '三', '0901101101', 'winter@example.com', '111306011', '姊姊', '0922333444', '素', '2025-05-01');
+INSERT INTO `member` (`student_id`, `name`, `department`, `grade`, `phone`, `email`, `password`, `emergency_contact_name`, `emergency_contact_phone`, `diet`, `join_date`) VALUES
+('112306065', '李中中', '資管系', '二', '0910029884', 'erica@example.com', '112306065', '叔叔', '0977666555', '葷', '2025-04-01'),
+('113306021', '金李涵', '資管系', '一', '0921021021', 'leehan@example.com', '113306021', '姑姑', '0966333444', '葷', '2025-05-02');
+
+INSERT INTO `permission` (`club_id`, `role_id`, `can_view_all_pages`, `can_manage_member`, `can_manage_asset`, `can_manage_finance`, `can_manage_permission`) VALUES
+('A001', 1, 1, 1, 1, 0, 1);
+INSERT INTO `permission` (`club_id`, `role_id`, `can_view_all_pages`, `can_manage_member`, `can_manage_asset`, `can_manage_finance`, `can_manage_permission`) VALUES
+('A001', 2, 1, 1, 0, 0, 1);
+INSERT INTO `permission` (`club_id`, `role_id`, `can_view_all_pages`, `can_manage_member`, `can_manage_asset`, `can_manage_finance`, `can_manage_permission`) VALUES
+('A001', 3, 1, 0, 0, 1, 0);
+INSERT INTO `permission` (`club_id`, `role_id`, `can_view_all_pages`, `can_manage_member`, `can_manage_asset`, `can_manage_finance`, `can_manage_permission`) VALUES
+('A001', 4, 1, 0, 1, 0, 0),
+('A001', 5, 0, 0, 0, 0, 0),
+('A002', 1, 1, 1, 1, 0, 1),
+('A002', 2, 1, 1, 0, 0, 1),
+('A002', 3, 1, 0, 0, 1, 0),
+('A002', 4, 1, 0, 1, 0, 0),
+('A002', 5, 0, 0, 0, 0, 0),
+('B001', 1, 1, 1, 1, 0, 1),
+('B001', 2, 1, 1, 0, 0, 1),
+('B001', 3, 1, 0, 0, 1, 0),
+('B001', 4, 1, 0, 1, 0, 0),
+('B001', 5, 0, 0, 0, 0, 0),
+('B002', 1, 1, 1, 1, 0, 1),
+('B002', 2, 1, 1, 0, 0, 1),
+('B002', 3, 1, 0, 0, 1, 0),
+('B002', 4, 1, 0, 1, 0, 0),
+('B002', 5, 0, 0, 0, 0, 0),
+('B005', 1, 1, 1, 1, 0, 1),
+('B005', 2, 1, 1, 0, 0, 1),
+('B005', 3, 1, 0, 0, 1, 0),
+('B005', 4, 1, 0, 1, 0, 0),
+('B005', 5, 0, 0, 0, 0, 0),
+('C004', 1, 1, 1, 1, 0, 1),
+('C004', 2, 1, 1, 0, 0, 1),
+('C004', 3, 1, 0, 0, 1, 0),
+('C004', 4, 1, 0, 1, 0, 0),
+('C004', 5, 0, 0, 0, 0, 0),
+('C005', 1, 1, 1, 1, 0, 1),
+('C005', 2, 1, 1, 0, 0, 1),
+('C005', 3, 1, 0, 0, 1, 0),
+('C005', 4, 1, 0, 1, 0, 0),
+('C005', 5, 0, 0, 0, 0, 0),
+('D005', 1, 1, 1, 1, 0, 1),
+('D005', 2, 1, 1, 0, 0, 1),
+('D005', 3, 1, 0, 0, 1, 0),
+('D005', 4, 1, 0, 1, 0, 0),
+('D005', 5, 0, 0, 0, 0, 0),
+('D008', 1, 1, 1, 1, 0, 1),
+('D008', 2, 1, 1, 0, 0, 1),
+('D008', 3, 1, 0, 0, 1, 0),
+('D008', 4, 1, 0, 1, 0, 0),
+('D008', 5, 0, 0, 0, 0, 0),
+('E001', 1, 1, 1, 1, 0, 1),
+('E001', 2, 1, 1, 0, 0, 1),
+('E001', 3, 1, 0, 0, 1, 0),
+('E001', 4, 1, 0, 1, 0, 0),
+('E001', 5, 0, 0, 0, 0, 0),
+('E019', 1, 1, 1, 1, 0, 1),
+('E019', 2, 1, 1, 0, 0, 1),
+('E019', 3, 1, 0, 0, 1, 0),
+('E019', 4, 1, 0, 1, 0, 0),
+('E019', 5, 0, 0, 0, 0, 0),
+('F008', 1, 1, 1, 1, 0, 1),
+('F008', 2, 1, 1, 0, 0, 1),
+('F008', 3, 1, 0, 0, 1, 0),
+('F008', 4, 1, 0, 1, 0, 0),
+('F008', 5, 0, 0, 0, 0, 0),
+('F014', 1, 1, 1, 1, 0, 1),
+('F014', 2, 1, 1, 0, 0, 1),
+('F014', 3, 1, 0, 0, 1, 0),
+('F014', 4, 1, 0, 1, 0, 0),
+('F014', 5, 0, 0, 0, 0, 0);
+
+INSERT INTO `role` (`role_id`, `role_name`) VALUES
+(1, '社長');
+INSERT INTO `role` (`role_id`, `role_name`) VALUES
+(2, '副社長');
+INSERT INTO `role` (`role_id`, `role_name`) VALUES
+(3, '總務');
+INSERT INTO `role` (`role_id`, `role_name`) VALUES
+(4, '器材'),
+(5, '社員');
+
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
