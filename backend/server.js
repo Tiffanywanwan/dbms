@@ -9,14 +9,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-
-// ✅ 根目錄測試用
+// 根目錄測試
 app.get('/', (req, res) => {
   res.send('會員管理 API 正常運作中');
 });
 
-
-// ✅ 查詢所有會員資料
+// 查詢所有會員資料
 app.get('/members', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM Member');
@@ -27,15 +25,12 @@ app.get('/members', async (req, res) => {
   }
 });
 
-
-// ✅ 查詢單一會員資料（以學號為 key）
+// 查詢單一會員資料
 app.get('/members/:student_id', async (req, res) => {
   const studentId = req.params.student_id;
   try {
     const [rows] = await db.query('SELECT * FROM Member WHERE student_id = ?', [studentId]);
-    if (rows.length === 0) {
-      return res.status(404).json({ message: '找不到此會員' });
-    }
+    if (rows.length === 0) return res.status(404).json({ message: '找不到此會員' });
     res.json(rows[0]);
   } catch (err) {
     console.error('查詢會員失敗：', err.message);
@@ -43,12 +38,11 @@ app.get('/members/:student_id', async (req, res) => {
   }
 });
 
-
-// ✅ 新增會員資料
+// 新增會員資料
 app.post('/members', async (req, res) => {
   const { student_id, name, department, grade, phone, email, role, join_date } = req.body;
   try {
-    const [result] = await db.query(
+    await db.query(
       `INSERT INTO Member (student_id, name, department, grade, phone, email, role, join_date)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [student_id, name, department, grade, phone, email, role, join_date]
@@ -60,8 +54,7 @@ app.post('/members', async (req, res) => {
   }
 });
 
-
-// ✅ 編輯會員資料（根據學號 student_id）
+// 編輯會員資料
 app.put('/members/:student_id', async (req, res) => {
   const studentId = req.params.student_id;
   const { name, department, grade, phone, email, role, join_date } = req.body;
@@ -70,9 +63,7 @@ app.put('/members/:student_id', async (req, res) => {
       `UPDATE Member SET name=?, department=?, grade=?, phone=?, email=?, role=?, join_date=? WHERE student_id=?`,
       [name, department, grade, phone, email, role, join_date, studentId]
     );
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: '找不到此會員' });
-    }
+    if (result.affectedRows === 0) return res.status(404).json({ message: '找不到此會員' });
     res.json({ message: '會員更新成功' });
   } catch (err) {
     console.error('更新會員失敗：', err.message);
@@ -80,15 +71,12 @@ app.put('/members/:student_id', async (req, res) => {
   }
 });
 
-
-// ✅ 刪除會員資料（根據學號 student_id）
+// 刪除會員資料
 app.delete('/members/:student_id', async (req, res) => {
   const studentId = req.params.student_id;
   try {
     const [result] = await db.query('DELETE FROM Member WHERE student_id = ?', [studentId]);
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: '找不到此會員' });
-    }
+    if (result.affectedRows === 0) return res.status(404).json({ message: '找不到此會員' });
     res.json({ message: '會員已刪除' });
   } catch (err) {
     console.error('刪除會員失敗：', err.message);
@@ -96,22 +84,17 @@ app.delete('/members/:student_id', async (req, res) => {
   }
 });
 
-// ✅ 登入 API
+// 登入 API
 app.post('/api/login', async (req, res) => {
   const { student_id, password } = req.body;
-
   try {
     const [rows] = await db.query(
       'SELECT * FROM Member WHERE student_id = ? AND password = ?',
       [student_id, password]
     );
-
-    if (rows.length === 0) {
-      return res.status(401).json({ message: '帳號或密碼錯誤' });
-    }
+    if (rows.length === 0) return res.status(401).json({ message: '帳號或密碼錯誤' });
 
     const user = rows[0];
-    // 可根據需要產生 JWT 或傳回基本資訊
     res.json({
       message: '登入成功',
       student_id: user.student_id,
@@ -124,42 +107,29 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-
-// 🔹 取得使用者加入過的所有學期（不重複）
+// 取得使用者加入過的所有學期（不重複）
 app.get('/api/members/:studentId/semesters', async (req, res) => {
   const studentId = req.params.studentId;
-  console.log('✅ 收到 API 呼叫, studentId =', studentId);
-
   const sql = `
     SELECT DISTINCT join_semester
     FROM ClubMember
     WHERE student_id = ?
     ORDER BY join_semester DESC
   `;
-
-  console.log('⚡ 準備執行 SQL 查詢...');
-
   try {
     const [results] = await db.query(sql, [studentId]);
-    console.log('🚀 SQL 執行完成');
-    console.log('✅ 查詢結果:', results);
-
     const semesters = results.map(r => r.join_semester);
     res.json(semesters);
   } catch (err) {
-    console.error('❌ 資料庫查詢錯誤：', err.message);
+    console.error('學期查詢錯誤：', err.message);
     res.status(500).json({ message: '資料庫錯誤' });
   }
 });
 
-
-
-// 🔹 根據學生與學期查詢該學期加入的社團
+// 根據學生與學期查詢該學期加入的社團
 app.get('/api/members/:studentId/clubs', async (req, res) => {
   const studentId = req.params.studentId;
   const semester = req.query.semester;
-
-  console.log(`✅ 查詢 ${studentId} 在 ${semester} 的社團`);
 
   let sql = `
     SELECT Club.club_id, Club.club_name
@@ -176,22 +146,19 @@ app.get('/api/members/:studentId/clubs', async (req, res) => {
 
   try {
     const [results] = await db.query(sql, params);
-    console.log('📦 查詢結果:', results);
     res.json(results);
   } catch (err) {
-    console.error('❌ 社團查詢失敗:', err.message);
+    console.error('社團查詢失敗:', err.message);
     res.status(500).json({ message: '社團查詢錯誤' });
   }
 });
 
-// 🔹 根據 clubId 查社團名稱（顯示用）
+// 根據 clubId 查社團名稱（顯示用）
 app.get('/api/clubs/:clubId', async (req, res) => {
   const clubId = req.params.clubId;
   try {
     const [rows] = await db.query('SELECT * FROM Club WHERE club_id = ?', [clubId]);
-    if (rows.length === 0) {
-      return res.status(404).json({ message: '找不到社團' });
-    }
+    if (rows.length === 0) return res.status(404).json({ message: '找不到社團' });
     res.json(rows[0]);
   } catch (err) {
     console.error('查詢社團失敗：', err.message);
@@ -199,10 +166,7 @@ app.get('/api/clubs/:clubId', async (req, res) => {
   }
 });
 
-
-
-
-// ✅ 啟動伺服器
+// 啟動伺服器
 app.listen(PORT, () => {
-  console.log(`✅ Server is running at http://localhost:${PORT}`);
+  console.log(`Server is running at http://localhost:${PORT}`);
 });
