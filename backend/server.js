@@ -3,10 +3,7 @@ const cors = require('cors');
 const db = require('./db');
 const path = require('path');
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 116f9c6 (Initial commit)
 const app = express();
 const PORT = 3001;
 
@@ -14,10 +11,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 116f9c6 (Initial commit)
 // 根目錄測試
 app.get('/', (req, res) => {
   res.send('會員管理 API 正常運作中');
@@ -35,13 +28,10 @@ app.get('/members', async (req, res) => {
 });
 
 // 查詢單一會員資料
-<<<<<<< HEAD
-app.get('/members/:student_id', async (req, res) => {
-  const studentId = req.params.student_id;
-=======
+
 app.get('/members/:studentId', async (req, res) => {
   const studentId = req.params.studentId;
->>>>>>> 116f9c6 (Initial commit)
+
   try {
     const [rows] = await db.query('SELECT * FROM Member WHERE student_id = ?', [studentId]);
     if (rows.length === 0) return res.status(404).json({ message: '找不到此會員' });
@@ -54,15 +44,7 @@ app.get('/members/:studentId', async (req, res) => {
 
 // 新增會員資料
 app.post('/members', async (req, res) => {
-<<<<<<< HEAD
-  const { student_id, name, department, grade, phone, email, role, join_date } = req.body;
-  try {
-    await db.query(
-      `INSERT INTO Member (student_id, name, department, grade, phone, email, role, join_date)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [student_id, name, department, grade, phone, email, role, join_date]
-    );
-=======
+
   const {
     studentId, name, department, grade,
     phone, email, password, emergency_contact_name,
@@ -98,7 +80,7 @@ app.post('/members', async (req, res) => {
       VALUES (?, ?, ?, ?)
     `, [studentId, clubId, roleId, '113-2']);
 
->>>>>>> 116f9c6 (Initial commit)
+
     res.status(201).json({ message: '會員新增成功' });
   } catch (err) {
     console.error('新增會員失敗：', err.message);
@@ -106,16 +88,10 @@ app.post('/members', async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-// 編輯會員資料
-app.put('/members/:student_id', async (req, res) => {
-  const studentId = req.params.student_id;
-=======
 
 // 編輯會員資料
 app.put('/members/:studentId', async (req, res) => {
   const studentId = req.params.studentId;
->>>>>>> 116f9c6 (Initial commit)
   const { name, department, grade, phone, email, role, join_date } = req.body;
   try {
     const [result] = await db.query(
@@ -131,13 +107,9 @@ app.put('/members/:studentId', async (req, res) => {
 });
 
 // 刪除會員資料
-<<<<<<< HEAD
-app.delete('/members/:student_id', async (req, res) => {
-  const studentId = req.params.student_id;
-=======
+
 app.delete('/members/:studentId', async (req, res) => {
   const studentId = req.params.studentId;
->>>>>>> 116f9c6 (Initial commit)
   try {
     const [result] = await db.query('DELETE FROM Member WHERE student_id = ?', [studentId]);
     if (result.affectedRows === 0) return res.status(404).json({ message: '找不到此會員' });
@@ -230,8 +202,7 @@ app.get('/api/clubs/:clubId', async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-=======
+
 // 個人資料頁面（含加入社團紀錄）
 app.get('/api/member/profile/:studentId', async (req, res) => {
   const studentId = req.params.studentId;
@@ -307,7 +278,7 @@ app.get('/api/member/role-permission/:clubId/:studentId', async (req, res) => {
   }
 });
 
->>>>>>> 116f9c6 (Initial commit)
+
 // 啟動伺服器
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
