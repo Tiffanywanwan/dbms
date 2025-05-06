@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     clubDropdown.classList.add("hidden");
   });
 
-  // ✅ Hover / 固定三大選單
+  // ✅ Hover / 固定三大選單 + 動態帶入 student_id
   let fixedMenu = null;
 
   document.querySelectorAll(".menu-wrapper").forEach(wrapper => {
@@ -101,4 +101,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     fixedMenu = null;
     document.querySelectorAll(".menu-wrapper .absolute").forEach(el => el.classList.add("hidden"));
   });
+
+  // ✅ 更新四個會員管理選單連結為帶入 student_id
+  const links = {
+    profile: document.querySelector("a[href='member-profile.html']"),
+    list: document.querySelector("a[href='member-list.html']"),
+    detail: document.querySelector("a[href='member-detail.html']"),
+    role: document.querySelector("a[href='role-management.html']")
+  };
+
+  if (links.profile) links.profile.href = `member-profile.html?clubId=${clubId}&student_id=${studentId}`;
+  if (links.list) links.list.href = `member-list.html?clubId=${clubId}&student_id=${studentId}`;
+  if (links.detail) links.detail.href = `member-detail.html?clubId=${clubId}&student_id=${studentId}`;
+  if (links.role) links.role.href = `role-management.html?clubId=${clubId}&student_id=${studentId}`;
 });
