@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./db');
 const path = require('path');
+const financeRoutes = require('./routes/financeRoutes');
 
 const app = express();
 const PORT = 3001;
@@ -9,6 +10,8 @@ const PORT = 3001;
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
+app.use("/api", financeRoutes); // ← 所有財務功能用 /api 開頭
+
 
 // 根目錄測試
 app.get('/', (req, res) => {
