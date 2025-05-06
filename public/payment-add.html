@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>登記繳費紀錄</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container py-5">
+    <h2 class="mb-4 text-primary">📝 登記繳費紀錄</h2>
+    <form id="paymentForm">
+      <div class="mb-3">
+        <label class="form-label">學號</label>
+        <input type="text" class="form-control" id="studentId" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">費用項目</label>
+        <select id="feeId" class="form-select"></select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">繳費方式</label>
+        <input type="text" class="form-control" id="method" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">繳費日期</label>
+        <input type="date" class="form-control" id="date" required>
+      </div>
+      <button type="submit" class="btn btn-success w-100">提交繳費紀錄</button>
+    </form>
+    <div id="message" class="mt-4"></div>
+  </div>
+
+  <script>
+    async function loadFees() {
+      const res = await fetch("/api/fees/simple");
+      const data = await res.json();
+      const select = document.getElementById("feeId");
+      data.forEach(f => {
+        const option = document.createElement("option");
+        option.value = f.id;
+        option.textContent = f.name;
+        select.appendChild(option);
+      });
+    }
+
+    document.getElementById("paymentForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        student_id: document.getElementById("studentId").value,
+        fee_id: document.getElementById("feeId").value,
+        method: document.getElementById("method").value,
+        date: document.getElementById("date").value
+      };
+
+      const res = await fetch("/api/payments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const msg = document.getElementById("message");
+      msg.innerHTML = res.ok
+        ? `<div class="alert alert-success">登記成功</div>`
+        : `<div class="alert alert-danger">登記失敗</div>`;
+    });
+
+    loadFees();
+  </script>
+</body>
+</html>
