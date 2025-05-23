@@ -250,8 +250,7 @@ app.get('/api/member/list/:clubId', async (req, res) => {
     }
   });
 
-  //會員權限管理
-
+//會員權限管理
   // 取得整個社團的成員＋權限
   app.get('/api/role-management/:clubId/members', async (req, res) => {
     const { clubId } = req.params;
@@ -335,6 +334,30 @@ app.get('/api/member/list/:clubId', async (req, res) => {
       res.status(500).json({ error: '伺服器錯誤' });
     }
   });
+
+// 角色與權限管理頁（管理者）
+  app.get('/api/member/role-permission/:clubId/:studentId', async (req, res) => {
+    const { clubId, studentId } = req.params;
+    try {
+      const [[info]] = await db.query(`
+        SELECT Member.student_id, name, Role.role_name,
+          Permission.can_manage_member,
+          Permission.can_manage_asset,
+          Permission.can_manage_finance,
+          Permission.can_manage_permission
+        FROM ClubMember
+        JOIN Member ON ClubMember.student_id = Member.student_id
+        JOIN Role ON ClubMember.role_id = Role.role_id
+        JOIN Permission ON Permission.club_id = ClubMember.club_id AND Permission.role_id = ClubMember.role_id
+        WHERE ClubMember.club_id = ? AND ClubMember.student_id = ?
+      `, [clubId, studentId]);
+      res.json(info);
+    } catch (err) {
+      console.error('查詢角色與權限失敗：', err.message);
+      res.status(500).json({ message: '資料庫錯誤' });
+    }
+  });
+
 
 
 // 啟動伺服器
