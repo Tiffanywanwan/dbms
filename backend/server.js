@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./db');
 const path = require('path');
-const financeRoutes = require('./routes/financeRoutes');
 
 
 const app = express();
@@ -11,8 +10,6 @@ const PORT = 3001;
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
-app.use("/api", financeRoutes); // ← 所有財務功能用 /api 開頭
-
 
 // 根目錄測試
 app.get('/', (req, res) => {
@@ -280,6 +277,9 @@ app.get('/api/member/role-permission/:clubId/:studentId', async (req, res) => {
     res.status(500).json({ message: '資料庫錯誤' });
   }
 });
+
+const financeRoutes = require('./routes/finance');
+app.use('/api', financeRoutes);
 
 
 // 啟動伺服器
