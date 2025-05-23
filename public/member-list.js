@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log("目前使用者角色為：", role);
 
     // 顯示新增與刪除按鈕（僅限社長、副社長、總務）
-    if (allowedRoles.includes(role)) {
+    if (role === "社長" || role === "副社長") {
       const section = document.getElementById("add-member-section");
       section.classList.remove("hidden");
 
