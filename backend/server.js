@@ -250,10 +250,9 @@ app.get('/api/member/list/:clubId', async (req, res) => {
     }
   });
 
-  //會員權限
-  // ===== 權限管理 =====
+  //會員權限管理
 
-  // ① 取得整個社團的成員＋權限   ← 放在最前面，比對最具體
+  // 取得整個社團的成員＋權限
   app.get('/api/role-management/:clubId/members', async (req, res) => {
     const { clubId } = req.params;
     try {
@@ -283,7 +282,7 @@ app.get('/api/member/list/:clubId', async (req, res) => {
     }
   });
 
-  // ② 查單一成員在社團中的角色
+  // 查單一成員在社團中的角色
   app.get('/api/role-management/:clubId/:studentId', async (req, res) => {
     const { clubId, studentId } = req.params;
     try {
@@ -300,7 +299,7 @@ app.get('/api/member/list/:clubId', async (req, res) => {
     }
   });
 
-  // 🛠 更新整個社團的某個職位對應的權限
+  // 更新整個社團的某個職位對應的權限
   app.put('/api/role-management/:clubId/:roleId', async (req, res) => {
     const { clubId, roleId } = req.params;
     const {
