@@ -3,7 +3,6 @@ const cors = require('cors');
 const db = require('./db');
 const path = require('path');
 
-
 const app = express();
 const PORT = 3001;
 
@@ -44,7 +43,6 @@ app.get('/members/:studentId', async (req, res) => {
 
 // 新增會員資料
 app.post('/members', async (req, res) => {
-
   const {
     studentId, name, department, grade,
     phone, email, password, emergency_contact_name,
@@ -80,7 +78,6 @@ app.post('/members', async (req, res) => {
       VALUES (?, ?, ?, ?)
     `, [studentId, clubId, roleId, '113-2']);
 
-
     res.status(201).json({ message: '會員新增成功' });
   } catch (err) {
     console.error('新增會員失敗：', err.message);
@@ -107,7 +104,6 @@ app.put('/members/:studentId', async (req, res) => {
 });
 
 // 刪除會員資料
-
 app.delete('/members/:studentId', async (req, res) => {
   const studentId = req.params.studentId;
   try {
@@ -202,7 +198,6 @@ app.get('/api/clubs/:clubId', async (req, res) => {
   }
 });
 
-
 // 個人資料頁面（含加入社團紀錄）
 app.get('/api/member/profile/:studentId', async (req, res) => {
   const studentId = req.params.studentId;
@@ -244,39 +239,125 @@ app.get('/api/member/list/:clubId', async (req, res) => {
 
 
 // 會員詳細資料頁面（管理者）
-app.get('/api/member/detail/:studentId', async (req, res) => {
-  const studentId = req.params.studentId;
-  try {
-    const [[member]] = await db.query('SELECT * FROM Member WHERE student_id = ?', [studentId]);
-    res.json(member);
-  } catch (err) {
-    console.error('查詢會員詳細資料失敗：', err.message);
-    res.status(500).json({ message: '資料庫錯誤' });
-  }
-});
+  app.get('/api/member/detail/:studentId', async (req, res) => {
+    const studentId = req.params.studentId;
+    try {
+      const [[member]] = await db.query('SELECT * FROM Member WHERE student_id = ?', [studentId]);
+      res.json(member);
+    } catch (err) {
+      console.error('查詢會員詳細資料失敗：', err.message);
+      res.status(500).json({ message: '資料庫錯誤' });
+    }
+  });
+
+//會員權限管理
+  // 取得整個社團的成員＋權限
+  app.get('/api/role-management/:clubId/members', async (req, res) => {
+    const { clubId } = req.params;
+    try {
+      const [rows] = await db.query(`
+        SELECT 
+          cm.student_id,
+          m.name,
+          cm.role_id,
+          IFNULL(r.role_name, '未知')         AS role_name,
+          COALESCE(p.can_manage_member, 0)   AS can_manage_member,
+          COALESCE(p.can_manage_asset, 0)    AS can_manage_asset,
+          COALESCE(p.can_manage_finance, 0)  AS can_manage_finance,
+          COALESCE(p.can_manage_permission,0)AS can_manage_permission
+        FROM clubmember cm
+        LEFT JOIN member m      ON m.student_id = cm.student_id
+        LEFT JOIN role   r      ON r.role_id    = cm.role_id
+        LEFT JOIN permission p  ON p.club_id    = cm.club_id
+                                AND p.role_id   = cm.role_id
+        WHERE cm.club_id = ?
+        ORDER BY cm.role_id, cm.student_id
+      `, [clubId]);
+
+      res.json(rows);
+    } catch (err) {
+      console.error('查詢成員權限失敗', err);
+      res.status(500).json({ error: '資料庫錯誤' });
+    }
+  });
+
+  // 查單一成員在社團中的角色
+  app.get('/api/role-management/:clubId/:studentId', async (req, res) => {
+    const { clubId, studentId } = req.params;
+    try {
+      const [[result]] = await db.query(
+        'SELECT role_id FROM clubmember WHERE club_id = ? AND student_id = ?',
+        [clubId, studentId]
+      );
+      if (!result) return res.status(404).json({ error: '找不到成員在該社團中的資料' });
+
+      res.json(result);
+    } catch (err) {
+      console.error('查詢使用者角色失敗：', err);
+      res.status(500).json({ error: '伺服器錯誤' });
+    }
+  });
+
+  // 更新整個社團的某個職位對應的權限
+  app.put('/api/role-management/:clubId/:roleId', async (req, res) => {
+    const { clubId, roleId } = req.params;
+    const {
+      can_manage_member,
+      can_manage_asset,
+      can_manage_finance,
+      can_manage_permission
+    } = req.body;
+
+    try {
+      const [result] = await db.query(`
+        UPDATE permission SET 
+          can_manage_member = ?,
+          can_manage_asset = ?,
+          can_manage_finance = ?,
+          can_manage_permission = ?
+        WHERE club_id = ? AND role_id = ?
+      `, [
+        can_manage_member ? 1 : 0,
+        can_manage_asset ? 1 : 0,
+        can_manage_finance ? 1 : 0,
+        can_manage_permission ? 1 : 0,
+        clubId, roleId
+      ]);
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: '找不到權限設定' });
+      }
+
+      res.json({ message: '更新成功' });
+    } catch (err) {
+      console.error('更新權限失敗', err);
+      res.status(500).json({ error: '伺服器錯誤' });
+    }
+  });
 
 // 角色與權限管理頁（管理者）
-app.get('/api/member/role-permission/:clubId/:studentId', async (req, res) => {
-  const { clubId, studentId } = req.params;
-  try {
-    const [[info]] = await db.query(`
-      SELECT Member.student_id, name, Role.role_name,
-        Permission.can_manage_member,
-        Permission.can_manage_asset,
-        Permission.can_manage_finance,
-        Permission.can_manage_permission
-      FROM ClubMember
-      JOIN Member ON ClubMember.student_id = Member.student_id
-      JOIN Role ON ClubMember.role_id = Role.role_id
-      JOIN Permission ON Permission.club_id = ClubMember.club_id AND Permission.role_id = ClubMember.role_id
-      WHERE ClubMember.club_id = ? AND ClubMember.student_id = ?
-    `, [clubId, studentId]);
-    res.json(info);
-  } catch (err) {
-    console.error('查詢角色與權限失敗：', err.message);
-    res.status(500).json({ message: '資料庫錯誤' });
-  }
-});
+  app.get('/api/member/role-permission/:clubId/:studentId', async (req, res) => {
+    const { clubId, studentId } = req.params;
+    try {
+      const [[info]] = await db.query(`
+        SELECT Member.student_id, name, Role.role_name,
+          Permission.can_manage_member,
+          Permission.can_manage_asset,
+          Permission.can_manage_finance,
+          Permission.can_manage_permission
+        FROM ClubMember
+        JOIN Member ON ClubMember.student_id = Member.student_id
+        JOIN Role ON ClubMember.role_id = Role.role_id
+        JOIN Permission ON Permission.club_id = ClubMember.club_id AND Permission.role_id = ClubMember.role_id
+        WHERE ClubMember.club_id = ? AND ClubMember.student_id = ?
+      `, [clubId, studentId]);
+      res.json(info);
+    } catch (err) {
+      console.error('查詢角色與權限失敗：', err.message);
+      res.status(500).json({ message: '資料庫錯誤' });
+    }
+  });
+
 
 const financeRoutes = require('./routes/finance');
 app.use('/api', financeRoutes);
