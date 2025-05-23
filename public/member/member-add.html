@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>新增會員</title>
+  <script defer src="member-add.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-8">
+  <div class="max-w-xl mx-auto bg-white shadow-lg rounded-lg p-6">
+    <h1 class="text-xl font-bold mb-4 text-blue-700">➕ 新增會員</h1>
+    <form id="addMemberForm" class="space-y-4">
+      <input type="text" name="studentId" placeholder="學號" class="w-full p-2 border rounded" required />
+      <input type="text" name="name" placeholder="姓名" class="w-full p-2 border rounded" required />
+      <input type="text" name="department" placeholder="系所" class="w-full p-2 border rounded" />
+      <select name="grade" class="w-full p-2 border rounded">
+        <option value="">選擇年級</option>
+        <option value="一">一</option>
+        <option value="二">二</option>
+        <option value="三">三</option>
+        <option value="四">四</option>
+      </select>
+      <input type="text" name="phone" placeholder="電話" class="w-full p-2 border rounded" />
+      <input type="email" name="email" placeholder="Email" class="w-full p-2 border rounded" />
+      <input type="text" name="emergency_contact_name" placeholder="緊急聯絡人姓名" class="w-full p-2 border rounded" />
+      <input type="text" name="emergency_contact_phone" placeholder="緊急聯絡人電話" class="w-full p-2 border rounded" />
+      <select name="diet" class="w-full p-2 border rounded">
+        <option value="">飲食習慣</option>
+        <option value="葷">葷</option>
+        <option value="素">素</option>
+      </select>
+      <input type="date" name="join_date" class="w-full p-2 border rounded" required />
+      <select name="roleId" class="w-full p-2 border rounded" required>
+        <option value="">選擇職位</option>
+        <option value="1">社長</option>
+        <option value="2">副社長</option>
+        <option value="3">總務</option>
+        <option value="4">器材</option>
+        <option value="5">社員</option>
+      </select>
+      <button type="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">新增會員</button>
+    </form>
+  </div>
+</body>
+</html>
