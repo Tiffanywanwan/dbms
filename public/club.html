@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
   <meta charset="UTF-8" />
   <title>社團資訊頁</title>
@@ -8,14 +9,17 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <style>
     body {
-      background-color: #e9f0f7; /* ✅ 統一背景顏色 */
+      background-color: #e9f0f7;
+      /* ✅ 統一背景顏色 */
     }
-    .menu-wrapper:hover .menu-button + div,
-    .menu-wrapper.active .menu-button + div {
+
+    .menu-wrapper:hover .menu-button+div,
+    .menu-wrapper.active .menu-button+div {
       display: block !important;
     }
   </style>
 </head>
+
 <body class="min-h-screen">
   <div class="max-w-6xl mx-auto mt-8 p-6 bg-white rounded-xl shadow relative">
 
@@ -36,45 +40,112 @@
     <div class="grid grid-cols-3 gap-4 mt-8">
       <!-- 會員管理 -->
       <div class="menu-wrapper relative" data-menu="menu-member">
-        <div class="menu-button bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-2 px-4 rounded text-center cursor-pointer">
+        <div
+          class="menu-button bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-2 px-4 rounded text-center cursor-pointer">
           <i class="bi bi-people-fill mr-2"></i>會員管理
         </div>
         <div id="menu-member" class="hidden absolute bg-white border shadow-lg mt-2 rounded z-10 w-64">
-          <a href="member/member-profile.html" class="block px-4 py-2 hover:bg-blue-50"><i class="bi bi-person-lines-fill mr-2"></i>會員資料頁面</a>
-          <a href="member/member-list.html" class="block px-4 py-2 hover:bg-blue-50"><i class="bi bi-card-list mr-2"></i>會員總覽頁面</a>
-          <a href="member/member-detail.html" class="block px-4 py-2 hover:bg-blue-50"><i class="bi bi-person-badge-fill mr-2"></i>會員詳細資料頁</a>
-          <a href="member/role-management.html" class="block px-4 py-2 hover:bg-blue-50"><i class="bi bi-shield-lock-fill mr-2"></i>角色與權限管理頁</a>
+          <a href="member/member-profile.html" class="block px-4 py-2 hover:bg-blue-50"><i
+              class="bi bi-person-lines-fill mr-2"></i>會員資料頁面</a>
+          <a href="member/member-list.html" class="block px-4 py-2 hover:bg-blue-50"><i
+              class="bi bi-card-list mr-2"></i>會員總覽頁面</a>
+          <a href="member/member-detail.html" class="block px-4 py-2 hover:bg-blue-50"><i
+              class="bi bi-person-badge-fill mr-2"></i>會員詳細資料頁</a>
+          <a href="member/role-management.html" class="block px-4 py-2 hover:bg-blue-50"><i
+              class="bi bi-shield-lock-fill mr-2"></i>角色與權限管理頁</a>
         </div>
       </div>
 
       <!-- 社產管理 -->
       <div class="menu-wrapper relative" data-menu="menu-asset">
-        <div class="menu-button bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-2 px-4 rounded text-center cursor-pointer">
+        <div
+          class="menu-button bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-2 px-4 rounded text-center cursor-pointer">
           <i class="bi bi-box-seam mr-2"></i>社產管理
         </div>
         <div id="menu-asset" class="hidden absolute bg-white border shadow-lg mt-2 rounded z-10 w-64">
-          <a href="asset-list.html" class="block px-4 py-2 hover:bg-blue-50"><i class="bi bi-archive-fill mr-2"></i>社產列表頁</a>
-          <a href="asset-detail.html" class="block px-4 py-2 hover:bg-blue-50"><i class="bi bi-info-square-fill mr-2"></i>社產詳細頁</a>
-          <a href="asset-record.html" class="block px-4 py-2 hover:bg-blue-50"><i class="bi bi-journal-check mr-2"></i>借還登記頁</a>
-          <a href="asset-edit.html" class="block px-4 py-2 hover:bg-blue-50"><i class="bi bi-pencil-fill mr-2"></i>新增／編輯社產頁</a>
+          <a href="asset-list.html" class="block px-4 py-2 hover:bg-blue-50"><i
+              class="bi bi-archive-fill mr-2"></i>社產列表頁</a>
+          <a href="asset-detail.html" class="block px-4 py-2 hover:bg-blue-50"><i
+              class="bi bi-info-square-fill mr-2"></i>社產詳細頁</a>
+          <a href="asset-record.html" class="block px-4 py-2 hover:bg-blue-50"><i
+              class="bi bi-journal-check mr-2"></i>借還登記頁</a>
+          <a href="asset-edit.html" class="block px-4 py-2 hover:bg-blue-50"><i
+              class="bi bi-pencil-fill mr-2"></i>新增／編輯社產頁</a>
         </div>
       </div>
 
       <!-- 財務管理 -->
-<div class="menu-wrapper relative" data-menu="menu-finance">
-  <div class="menu-button bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-2 px-4 rounded text-center cursor-pointer">
-    <i class="bi bi-cash-coin mr-2"></i>財務管理
-  </div>
-  <div id="menu-finance" class="hidden absolute bg-white border shadow-lg mt-2 rounded z-10 w-64">
-    <a href="fee-edit.html" class="block px-4 py-2 hover:bg-blue-50"><i class="bi bi-pencil-fill mr-2"></i>新增／編輯費用頁</a>
-    <a href="fee-overview.html" class="block px-4 py-2 hover:bg-blue-50"><i class="bi bi-list-columns-reverse mr-2"></i>查看費用總覽</a>
-    <a href="payment-record.html" class="block px-4 py-2 hover:bg-blue-50"><i class="bi bi-journal-plus mr-2"></i>登記繳費紀錄</a>
-    <a href="payment-status.html" class="block px-4 py-2 hover:bg-blue-50"><i class="bi bi-bar-chart-fill mr-2"></i>繳費狀態查詢</a>
-    <a href="personal-payment.html" class="block px-4 py-2 hover:bg-blue-50"><i class="bi bi-receipt-cutoff mr-2"></i>個人繳費紀錄頁</a>
-  </div>
-</div>
-
+      <!-- 財務管理 -->
+      <div class="menu-wrapper relative" data-menu="menu-finance">
+        <div
+          class="menu-button bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-2 px-4 rounded text-center cursor-pointer">
+          <i class="bi bi-cash-coin mr-2"></i>財務管理
+        </div>
+        <div id="menu-finance" class="hidden absolute bg-white border shadow-lg mt-2 rounded z-10 w-64">
+          <!-- 新增／編輯費用 -->
+          <a href="#" id="menu-fee-edit" class="block px-4 py-2 hover:bg-blue-50">
+            <i class="bi bi-pencil-fill mr-2"></i>新增／編輯費用頁</a>
+          <!-- 查看費用總覽 -->
+          <a href="fee-overview.html" class="block px-4 py-2 hover:bg-blue-50">
+            <i class="bi bi-list-columns-reverse mr-2"></i>查看費用總覽</a>
+          <!-- 登記繳費紀錄 -->
+          <a href="#" id="menu-pay-record" class="block px-4 py-2 hover:bg-blue-50">
+            <i class="bi bi-journal-plus mr-2"></i>登記繳費紀錄</a>
+          <!-- 繳費狀態查詢 👉 改為 JS 產生 from=club -->
+          <a href="#" id="menu-pay-status" class="block px-4 py-2 hover:bg-blue-50">
+            <i class="bi bi-bar-chart-fill mr-2"></i>繳費狀態查詢</a>
+          <!-- 個人繳費紀錄 -->
+          <a href="personal-payment.html" class="block px-4 py-2 hover:bg-blue-50">
+            <i class="bi bi-receipt-cutoff mr-2"></i>個人繳費紀錄頁</a>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- ✨ 追加腳本：權限＋帶 from=club＋動態隱藏選單 -->
+  <script type="module">
+    /* 一次引入共用工具 */
+    import {
+      navigateWithClubId,
+      apiGet,
+      getClubId
+    } from './finance-common.js';
+
+    /* -------------------------------------------------- 抓權限 */
+    const clubId = getClubId();
+    const studentId = localStorage.getItem('studentId');
+
+    let canFinance = false;
+    try {
+      const perm = await apiGet(`/member/role-permission/${clubId}/${studentId}`);
+      canFinance = perm.can_manage_finance;
+      if (!canFinance) {
+        /* 只留下「個人繳費紀錄」；其餘按鈕移除 */
+        document.querySelectorAll('#menu-finance a')
+          .forEach(a => {
+            if (!a.href.includes('personal-payment.html')) a.remove();
+          });
+      }
+    } catch (e) {
+      console.error('[club] permission fail:', e);
+    }
+
+    /* -------------------------------------------------- 綁定事件
+         （若剛才被移除就不會綁到）                           */
+    const feeEditBtn = document.getElementById('menu-fee-edit');
+    const payRecBtn = document.getElementById('menu-pay-record');
+    const payStatusBtn = document.getElementById('menu-pay-status');
+
+    feeEditBtn && feeEditBtn.addEventListener('click', () =>
+      navigateWithClubId('fee-edit.html?from=club'));
+
+    payRecBtn && payRecBtn.addEventListener('click', () =>
+      navigateWithClubId('payment-record.html?from=club'));
+
+    payStatusBtn && payStatusBtn.addEventListener('click', () =>
+      navigateWithClubId('payment-status.html?from=club'));
+  </script>
+
 </body>
+
 </html>
