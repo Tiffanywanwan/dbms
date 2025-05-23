@@ -277,6 +277,25 @@ app.get('/api/member/role-permission/:clubId/:studentId', async (req, res) => {
     res.status(500).json({ message: '資料庫錯誤' });
   }
 });
+// 刪除會員資料（包含 ClubMember 關聯）
+app.delete('/members/:clubId/:studentId', async (req, res) => {
+  const { clubId, studentId } = req.params;
+  try {
+    // 先刪 ClubMember
+    await db.query('DELETE FROM ClubMember WHERE club_id = ? AND student_id = ?', [clubId, studentId]);
+    // 再刪 Member（如果該會員沒有參加其他社團，才會刪）
+    const [[countRow]] = await db.query('SELECT COUNT(*) AS count FROM ClubMember WHERE student_id = ?', [studentId]);
+    if (countRow.count === 0) {
+      await db.query('DELETE FROM Member WHERE student_id = ?', [studentId]);
+    }
+
+    res.json({ message: '會員刪除成功' });
+  } catch (err) {
+    console.error('刪除會員失敗：', err.message);
+    res.status(500).json({ message: '刪除會員失敗' });
+  }
+});
+
 
 
 // 啟動伺服器
