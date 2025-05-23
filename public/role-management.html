@@ -76,7 +76,6 @@
   </body>
 <head>
   <meta charset="UTF-8" />
-  <script defer src="navbar.js"></script>
 
   <title>角色與權限管理</title>
   <script defer src="role-management.js"></script>
@@ -84,28 +83,39 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
 </head>
 <body class="bg-gray-100 min-h-screen p-6">
-  <!-- 共用選單 -->
-  <div id="navbar"></div>
 
   <!-- 主內容 -->
-  <div class="max-w-5xl mx-auto mt-8 bg-white p-6 rounded shadow">
-    <h1 class="text-xl font-semibold text-blue-700 mb-4"><i class="bi bi-shield-lock-fill mr-2"></i><span id="permission-title">權限管理</span></h1>
-    <table class="w-full border text-center text-sm text-gray-700">
-      <thead class="bg-gray-200">
-        <tr>
-          <th class="border p-2">學號</th>
-          <th class="border p-2">姓名</th>
-          <th class="border p-2">職位</th>
-          <th class="border p-2">是否可管理會員</th>
-          <th class="border p-2">是否可新增資產</th>
-          <th class="border p-2">是否可編輯財務資料</th>
-          <th class="border p-2">是否可進入樂活館</th>
-        </tr>
-      </thead>
-      <tbody id="permission-info">
-        <!-- 動態插入 -->
-      </tbody>
-    </table>
+  <div class="max-w-6xl mx-auto mt-6 mb-10 bg-white shadow-md rounded-xl p-8">
+    <h1 class="text-2xl font-bold mb-4 text-blue-700">
+      <i class="bi bi-shield-lock-fill mr-2"></i>
+      <span id="permission-title">權限管理</span>
+    </h1>
+
+    <form id="permission-form">
+      <table class="w-full border text-center text-sm text-gray-700">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="border p-2">學號</th>
+            <th class="border p-2">姓名</th>
+            <th class="border p-2">職位</th>
+            <th class="border p-2">可管理會員</th>
+            <th class="border p-2">可新增社產</th>
+            <th class="border p-2">可編輯財務</th>
+            <th class="border p-2">可進入樂活館</th>
+          </tr>
+        </thead>
+        <tbody id="permission-info">
+          <!-- JS 動態插入 -->
+        </tbody>
+      </table>
+
+      <div class="text-right mt-4">
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          儲存所有權限
+        </button>
+      </div>
+    </form>
   </div>
+    
 </body>
 </html>
