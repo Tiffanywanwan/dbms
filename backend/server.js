@@ -10,7 +10,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
-
 // 根目錄測試
 app.get('/', (req, res) => {
   res.send('會員管理 API 正常運作中');
@@ -28,8 +27,10 @@ app.get('/members', async (req, res) => {
 });
 
 // 查詢單一會員資料
+
 app.get('/members/:studentId', async (req, res) => {
   const studentId = req.params.studentId;
+
   try {
     const [rows] = await db.query('SELECT * FROM Member WHERE student_id = ?', [studentId]);
     if (rows.length === 0) return res.status(404).json({ message: '找不到此會員' });

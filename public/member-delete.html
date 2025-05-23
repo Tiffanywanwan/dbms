@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>刪除會員</title>
+  <script defer src="member-delete.js"></script> <!-- 正確引入 -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-8">
+  <div class="max-w-xl mx-auto bg-white shadow-lg rounded-lg p-6">
+    <h1 class="text-xl font-bold mb-4 text-red-700">🗑️ 刪除會員</h1>
+    <form id="deleteMemberForm" class="space-y-4">
+      <input type="text" name="studentId" id="studentId" placeholder="請輸入要刪除的會員學號" class="w-full p-2 border rounded" required />
+      <button type="submit" class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">確認刪除</button>
+    </form>
+  </div>
+</body>
+</html>
