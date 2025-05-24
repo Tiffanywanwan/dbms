@@ -5,7 +5,7 @@
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_ㄇNOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 CREATE TABLE `club` (
   `club_id` varchar(10) NOT NULL,
@@ -26,6 +26,28 @@ CREATE TABLE `clubmember` (
   CONSTRAINT `clubmember_ibfk_3` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `fee_assignments` (
+  `fee_id` int NOT NULL,
+  `student_id` varchar(20) NOT NULL,
+  PRIMARY KEY (`fee_id`,`student_id`),
+  KEY `student_id` (`student_id`),
+  CONSTRAINT `fee_assignments_ibfk_1` FOREIGN KEY (`fee_id`) REFERENCES `fees` (`fee_id`) ON DELETE CASCADE,
+  CONSTRAINT `fee_assignments_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `member` (`student_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `fees` (
+  `fee_id` int NOT NULL AUTO_INCREMENT,
+  `club_id` varchar(10) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `deadline` date NOT NULL,
+  `target` enum('all','partial') NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`fee_id`),
+  KEY `club_id` (`club_id`),
+  CONSTRAINT `fees_ibfk_1` FOREIGN KEY (`club_id`) REFERENCES `club` (`club_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `member` (
   `student_id` varchar(20) NOT NULL,
   `name` varchar(50) NOT NULL,
@@ -40,6 +62,19 @@ CREATE TABLE `member` (
   `join_date` date NOT NULL,
   PRIMARY KEY (`student_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `payments` (
+  `payment_id` int NOT NULL AUTO_INCREMENT,
+  `fee_id` int NOT NULL,
+  `student_id` varchar(20) NOT NULL,
+  `paid_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `amount` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`payment_id`),
+  KEY `fee_id` (`fee_id`),
+  KEY `student_id` (`student_id`),
+  CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`fee_id`) REFERENCES `fees` (`fee_id`) ON DELETE CASCADE,
+  CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `member` (`student_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `permission` (
   `club_id` varchar(10) NOT NULL,
@@ -91,6 +126,30 @@ INSERT INTO `clubmember` (`student_id`, `club_id`, `role_id`, `join_semester`) V
 ('112306065', 'E019', 2, '113-2'),
 ('113306021', 'E019', 5, '113-2');
 
+INSERT INTO `fee_assignments` (`fee_id`, `student_id`) VALUES
+(2, '110306001');
+INSERT INTO `fee_assignments` (`fee_id`, `student_id`) VALUES
+(23, '110306001');
+INSERT INTO `fee_assignments` (`fee_id`, `student_id`) VALUES
+(22, '111306001');
+INSERT INTO `fee_assignments` (`fee_id`, `student_id`) VALUES
+(22, '111306011'),
+(2, '112306065'),
+(23, '112306065');
+
+INSERT INTO `fees` (`fee_id`, `club_id`, `name`, `amount`, `deadline`, `target`, `created_at`) VALUES
+(2, 'E019', '迎新晚會餐費', '300.00', '2025-05-30', 'partial', '2025-05-19 01:43:34');
+INSERT INTO `fees` (`fee_id`, `club_id`, `name`, `amount`, `deadline`, `target`, `created_at`) VALUES
+(3, 'E019', '113-1 社費', '500.00', '2025-05-31', 'all', '2025-05-19 03:47:25');
+INSERT INTO `fees` (`fee_id`, `club_id`, `name`, `amount`, `deadline`, `target`, `created_at`) VALUES
+(7, 'E019', '113-2 社費', '1000.00', '2025-06-30', 'all', '2025-05-19 03:53:51');
+INSERT INTO `fees` (`fee_id`, `club_id`, `name`, `amount`, `deadline`, `target`, `created_at`) VALUES
+(8, 'E019', '113-1 社費', '1000.00', '2025-07-09', 'all', '2025-05-19 03:56:05'),
+(10, 'E019', '112-1 社費', '800.00', '2025-05-31', 'all', '2025-05-19 04:35:38'),
+(13, 'C004', '113-1 社費', '700.00', '2024-10-10', 'all', '2025-05-19 05:30:59'),
+(22, 'E019', 'aespa費用', '200.00', '2025-06-30', 'partial', '2025-05-19 15:10:59'),
+(23, 'E019', 'BTS費用', '20000.00', '2025-05-24', 'partial', '2025-05-23 21:25:21');
+
 INSERT INTO `member` (`student_id`, `name`, `department`, `grade`, `phone`, `email`, `password`, `emergency_contact_name`, `emergency_contact_phone`, `diet`, `join_date`) VALUES
 ('110306001', '田柾國', '資管系', '四', '0901901901', 'jungkook@example.com', '110306001', '媽媽', '0987654321', '葷', '2025-04-01');
 INSERT INTO `member` (`student_id`, `name`, `department`, `grade`, `phone`, `email`, `password`, `emergency_contact_name`, `emergency_contact_phone`, `diet`, `join_date`) VALUES
@@ -100,6 +159,21 @@ INSERT INTO `member` (`student_id`, `name`, `department`, `grade`, `phone`, `ema
 INSERT INTO `member` (`student_id`, `name`, `department`, `grade`, `phone`, `email`, `password`, `emergency_contact_name`, `emergency_contact_phone`, `diet`, `join_date`) VALUES
 ('112306065', '李中中', '資管系', '二', '0910029884', 'erica@example.com', '112306065', '叔叔', '0977666555', '葷', '2025-04-01'),
 ('113306021', '金李涵', '資管系', '一', '0921021021', 'leehan@example.com', '113306021', '姑姑', '0966333444', '葷', '2025-05-02');
+
+INSERT INTO `payments` (`payment_id`, `fee_id`, `student_id`, `paid_at`, `amount`) VALUES
+(2, 7, '111306001', '2025-05-19 03:54:12', '1000.00');
+INSERT INTO `payments` (`payment_id`, `fee_id`, `student_id`, `paid_at`, `amount`) VALUES
+(3, 7, '111306011', '2025-05-19 03:54:12', '1000.00');
+INSERT INTO `payments` (`payment_id`, `fee_id`, `student_id`, `paid_at`, `amount`) VALUES
+(6, 8, '111306001', '2025-05-19 05:51:52', '1000.00');
+INSERT INTO `payments` (`payment_id`, `fee_id`, `student_id`, `paid_at`, `amount`) VALUES
+(7, 8, '113306021', '2025-05-19 05:51:52', '1000.00'),
+(8, 22, '111306001', '2025-05-19 15:22:50', '200.00'),
+(9, 10, '110306001', '2025-05-19 16:01:11', '800.00'),
+(10, 10, '111306001', '2025-05-19 16:01:11', '800.00'),
+(11, 10, '111306011', '2025-05-19 16:01:11', '800.00'),
+(12, 10, '112306065', '2025-05-19 16:01:11', '800.00'),
+(13, 10, '113306021', '2025-05-19 16:01:11', '800.00');
 
 INSERT INTO `permission` (`club_id`, `role_id`, `can_view_all_pages`, `can_manage_member`, `can_manage_asset`, `can_manage_finance`, `can_manage_permission`) VALUES
 ('A001', 1, 1, 1, 1, 0, 1);
