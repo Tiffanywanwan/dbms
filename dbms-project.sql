@@ -255,6 +255,48 @@ INSERT INTO `role` (`role_id`, `role_name`) VALUES
 (4, '器材'),
 (5, '社員');
 
+DROP TABLE IF EXISTS `asset_borrow_log`;
+CREATE TABLE `asset_borrow_log` (
+  `log_id` int NOT NULL AUTO_INCREMENT,
+  `item_id` int NOT NULL,
+  `borrow_date` date NOT NULL,
+  `return_date` date DEFAULT NULL,
+  `borrower` varchar(20) NOT NULL,
+  `note` text,
+  PRIMARY KEY (`log_id`),
+  KEY `fk_borrower_member` (`borrower`),
+  KEY `fk_borrowed_item` (`item_id`),
+  CONSTRAINT `fk_borrowed_item` FOREIGN KEY (`item_id`) REFERENCES `asset_item` (`item_id`),
+  CONSTRAINT `fk_borrower_member` FOREIGN KEY (`borrower`) REFERENCES `member` (`student_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+DROP TABLE IF EXISTS `asset_item`;
+CREATE TABLE `asset_item` (
+  `item_id` int NOT NULL AUTO_INCREMENT,
+  `item_name` varchar(100) NOT NULL,
+  `location` varchar(100) DEFAULT NULL,
+  `status` enum('可借用','不可借用') DEFAULT '可借用',
+  `purchase_date` date DEFAULT NULL,
+  `purchaser` varchar(50) DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  `note` text,
+  `club_id` varchar(10) NOT NULL,
+  PRIMARY KEY (`item_id`),
+  KEY `fk_asset_club` (`club_id`),
+  CONSTRAINT `fk_asset_club` FOREIGN KEY (`club_id`) REFERENCES `club` (`club_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO `asset_item` (`item_id`, `item_name`, `location`, `status`, `purchase_date`, `purchaser`, `price`, `note`, `club_id`) VALUES
+(1, '投影機', '社辦櫃子1', '可借用', '2023-01-15', '田柾國', 12000.00, '高畫質', 'E019'),
+(2, '折疊桌', '倉庫左側', '可借用', '2022-12-05', '田柾國', 1500.00, '有點刮痕', 'E019'),
+(3, '延長線', '工具箱', '可借用', '2023-02-20', '劉知珉', 300.00, '', 'E019'),
+(4, '音響', '社辦角落', '可借用', '2023-03-12', '金冬天', 5600.00, '含藍牙功能', 'E019'),
+(5, '打氣筒', '倉庫中層', '可借用', '2023-05-01', '李中中', 500.00, '', 'E019'),
+(6, '煮水壺', '社辦櫃子2', '可借用', '2023-06-11', '金李涵', 850.00, '保溫效果不錯', 'E019'),
+(7, '布條', '活動道具箱', '可借用', '2022-10-20', '劉知珉', 1200.00, '去年社博用', 'E019'),
+(8, '帳篷', '倉庫頂層', '可借用', '2023-04-15', '田柾國', 3500.00, '可遮陽防雨', 'E019'),
+(9, '小白板', '社辦門後', '可借用', '2022-09-10', '金冬天', 400.00, '', 'E019'),
+(10, '急救包', '社辦抽屜', '可借用', '2023-07-01', '李中中', 900.00, '完整無缺', 'E019');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
