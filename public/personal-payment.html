@@ -33,7 +33,7 @@
     </div>
 
     <script type="module">
-        import { apiGet, fmt, getClubId } from './finance-common.js';
+        import { apiGet, fmt, getClubId, setupFinanceMenu } from './finance-common.js';
 
         const sid = localStorage.getItem('studentId');
         if (!sid) { alert('請先登入'); location.href = 'login.html'; }
@@ -41,6 +41,9 @@
         const clubId = getClubId();                       // ← 目前社團
         document.getElementById('mySid').textContent = sid;
         const payBody = document.getElementById('payBody');
+
+        // 設定財務管理選單
+        setupFinanceMenu();
 
         /* 只撈本社團 ------------------------------------------------------ */
         async function load() {

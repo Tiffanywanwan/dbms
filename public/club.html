@@ -38,18 +38,18 @@
 
     <!-- ✅ 功能列 -->
     <div class="grid grid-cols-3 gap-4 mt-8">
-      <!-- 會員管理 -->
+      <!-- 社員管理 -->
       <div class="menu-wrapper relative" data-menu="menu-member">
         <div
           class="menu-button bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg py-2 px-4 rounded text-center cursor-pointer">
-          <i class="bi bi-people-fill mr-2"></i>會員管理
+          <i class="bi bi-people-fill mr-2"></i>社員管理
         </div>
         <div id="menu-member" class="hidden absolute bg-white border shadow-lg mt-2 rounded z-10 w-64">
-          <a href="member-profile.html" class="block px-4 py-2 hover:bg-blue-50"><i
-              class="bi bi-person-lines-fill mr-2"></i>會員資料頁面</a>
-          <a href="member-list.html" class="block px-4 py-2 hover:bg-blue-50"><i
-              class="bi bi-card-list mr-2"></i>會員總覽頁面</a>
-          <a href="role-management.html" class="block px-4 py-2 hover:bg-blue-50"><i
+          <a href="#" id="member-profile-link" class="block px-4 py-2 hover:bg-blue-50"><i
+              class="bi bi-person-lines-fill mr-2"></i>社員資料頁面</a>
+          <a href="#" id="member-list-link" class="block px-4 py-2 hover:bg-blue-50"><i
+              class="bi bi-card-list mr-2"></i>社員總覽頁面</a>
+          <a href="#" id="role-management-link" class="block px-4 py-2 hover:bg-blue-50"><i
               class="bi bi-shield-lock-fill mr-2"></i>角色與權限管理頁</a>
         </div>
       </div>
@@ -61,12 +61,11 @@
           <i class="bi bi-box-seam mr-2"></i>社產管理
         </div>
         <div id="menu-asset" class="hidden absolute bg-white border shadow-lg mt-2 rounded z-10 w-64">
-          <a href="assets.html" class="block px-4 py-2 hover:bg-blue-50" id="assetsLink"><i class="bi bi-archive-fill mr-2"></i>社產列表</a>
-          <a href="borrow-logs.html" class="block px-4 py-2 hover:bg-blue-50" id="borrowLogsLink"><i class="bi bi-journal-check mr-2"></i>借還記錄</a>
+          <a href="#" id="assets-link" class="block px-4 py-2 hover:bg-blue-50" id="assetsLink"><i class="bi bi-archive-fill mr-2"></i>社產列表</a>
+          <a href="#" id="borrow-logs-link" class="block px-4 py-2 hover:bg-blue-50" id="borrowLogsLink"><i class="bi bi-journal-check mr-2"></i>借還記錄</a>
         </div>
       </div>
 
-      <!-- 財務管理 -->
       <!-- 財務管理 -->
       <div class="menu-wrapper relative" data-menu="menu-finance">
         <div
@@ -127,15 +126,66 @@
     const feeEditBtn = document.getElementById('menu-fee-edit');
     const payRecBtn = document.getElementById('menu-pay-record');
     const payStatusBtn = document.getElementById('menu-pay-status');
+    const feeOverviewLink = document.querySelector('a[href="fee-overview.html"]');
+    const personalPaymentLink = document.querySelector('a[href="personal-payment.html"]');
+    const memberProfileLink = document.getElementById('member-profile-link');
+    const memberListLink = document.getElementById('member-list-link');
+    const roleManagementLink = document.getElementById('role-management-link');
+    const assetsLink = document.getElementById('assets-link');
+    const borrowLogsLink = document.getElementById('borrow-logs-link');
 
-    feeEditBtn && feeEditBtn.addEventListener('click', () =>
-      navigateWithClubId('fee-edit.html?from=club'));
+    // 財務管理相關連結
+    feeEditBtn && feeEditBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `fee-edit.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
 
-    payRecBtn && payRecBtn.addEventListener('click', () =>
-      navigateWithClubId('payment-record.html?from=club'));
+    payRecBtn && payRecBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `payment-record.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
 
-    payStatusBtn && payStatusBtn.addEventListener('click', () =>
-      navigateWithClubId('payment-status.html?from=club'));
+    payStatusBtn && payStatusBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `payment-status.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
+
+    feeOverviewLink && feeOverviewLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `fee-overview.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
+
+    personalPaymentLink && personalPaymentLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `personal-payment.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
+
+    // 社員管理相關連結
+    memberProfileLink && memberProfileLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `member-profile.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
+
+    memberListLink && memberListLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `member-list.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
+
+    roleManagementLink && roleManagementLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `role-management.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
+
+    // 社產管理相關連結
+    assetsLink && assetsLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `assets.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
+
+    borrowLogsLink && borrowLogsLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `borrow-logs.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
   </script>
 
 </body>

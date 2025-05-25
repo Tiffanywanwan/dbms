@@ -66,7 +66,20 @@
     </nav>
 
     <div class="container mt-4">
-        <h2 class="mb-4">社產列表</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>社產列表</h2>
+            <!-- 搜索欄 -->
+            <div class="input-group" style="width: 300px;">
+                <span class="input-group-text bg-white">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" 
+                       id="searchAsset" 
+                       class="form-control" 
+                       placeholder="搜尋社產名稱..."
+                       aria-label="搜尋社產">
+            </div>
+        </div>
         <div class="row" id="assetsList">
             <!-- 社產卡片將在這裡動態生成 -->
         </div>
@@ -170,27 +183,6 @@
         document.getElementById('toAssets').href = `assets.html?clubId=${clubId}`;
         document.getElementById('toBorrowLogs').href = `borrow-logs.html?clubId=${clubId}`;
 
-        // 查詢當前社團的role_id
-        async function fetchRoleId() {
-            try {
-                const res = await fetch(`/api/members/${studentId}/role?clubId=${clubId}`);
-                if (!res.ok) throw new Error('查詢權限失敗');
-                const data = await res.json();
-                currentRoleId = String(data.role_id);
-                // 社員不能新增社產，隱藏+按鈕
-                const addBtn = document.querySelector('.add-button');
-                if (addBtn) {
-                    if (currentRoleId === '5') {
-                        addBtn.style.display = 'none';
-                    } else {
-                        addBtn.style.display = 'flex';
-                    }
-                }
-            } catch (err) {
-                currentRoleId = null;
-            }
-        }
-
         // 獲取社產列表
         async function fetchAssets() {
             try {
@@ -223,17 +215,17 @@
                 }
 
                 return `
-                <div class=\"col-md-4 mb-4\">
-                    <div class=\"card asset-card\">
-                        <div class=\"card-body\">
-                            <h5 class=\"card-title\">${asset.item_name}</h5>
-                            <p class=\"card-text\">
-                                <i class=\"bi bi-geo-alt\"></i> 位置：${asset.location || '未指定'}<br>
-                                <i class=\"bi bi-tag\"></i> 價格：${asset.price || '未記錄'}<br>
-                                <i class=\"bi bi-calendar\"></i> 購入日期：${purchaseDate}<br>
-                                <i class=\"bi bi-person\"></i> 購入者：${asset.purchaser || '未記錄'}<br>
-                                <i class=\"bi bi-info-circle\"></i> 狀態：
-                                <span class=\"${asset.status === '可借用' ? 'status-available' : 'status-unavailable'}\">
+                <div class="col-md-4 mb-4 asset-item" data-name="${asset.item_name.toLowerCase()}">
+                    <div class="card asset-card">
+                        <div class="card-body">
+                            <h5 class="card-title">${asset.item_name}</h5>
+                            <p class="card-text">
+                                <i class="bi bi-geo-alt"></i> 位置：${asset.location || '未指定'}<br>
+                                <i class="bi bi-tag"></i> 價格：${asset.price || '未記錄'}<br>
+                                <i class="bi bi-calendar"></i> 購入日期：${purchaseDate}<br>
+                                <i class="bi bi-person"></i> 購入者：${asset.purchaser || '未記錄'}<br>
+                                <i class="bi bi-info-circle"></i> 狀態：
+                                <span class="${asset.status === '可借用' ? 'status-available' : 'status-unavailable'}">
                                     ${asset.status}
                                 </span>
                             </p>
@@ -243,6 +235,22 @@
                 </div>
                 `;
             }).join('');
+
+            // 添加搜索功能
+            const searchInput = document.getElementById('searchAsset');
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const assetItems = document.querySelectorAll('.asset-item');
+                
+                assetItems.forEach(item => {
+                    const assetName = item.dataset.name;
+                    if (assetName.includes(searchTerm)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
         }
 
         // 顯示借用Modal
@@ -294,6 +302,52 @@
             }
         });
 
+        // 查詢當前社團的role_id和權限
+        async function fetchRoleId() {
+            try {
+                const res = await fetch(`/api/members/${studentId}/role?clubId=${clubId}`, {
+                    headers: {
+                        'X-Student-Id': studentId,
+                        'X-Club-Id': clubId
+                    }
+                });
+                if (!res.ok) throw new Error('查詢權限失敗');
+                const data = await res.json();
+                currentRoleId = String(data.role_id);
+
+                // 檢查是否有管理社產的權限
+                const permRes = await fetch(`/api/member/role-permission/${clubId}/${studentId}`, {
+                    headers: {
+                        'X-Student-Id': studentId,
+                        'X-Club-Id': clubId
+                    }
+                });
+                if (!permRes.ok) throw new Error('查詢權限失敗');
+                const permData = await permRes.json();
+                
+                // 根據權限顯示或隱藏新增按鈕
+                const addBtn = document.querySelector('.add-button');
+                if (addBtn) {
+                    addBtn.style.display = permData.can_manage_asset ? 'flex' : 'none';
+                }
+
+                // 如果沒有管理權限，禁用所有管理相關的功能
+                if (!permData.can_manage_asset) {
+                    // 隱藏編輯和刪除按鈕
+                    document.querySelectorAll('.edit-button, .delete-button').forEach(btn => {
+                        btn.style.display = 'none';
+                    });
+                }
+            } catch (err) {
+                console.error('權限檢查失敗:', err);
+                currentRoleId = null;
+                // 發生錯誤時，預設隱藏所有管理功能
+                document.querySelectorAll('.add-button, .edit-button, .delete-button').forEach(btn => {
+                    btn.style.display = 'none';
+                });
+            }
+        }
+
         // 確認新增社產
         document.getElementById('confirmAdd').addEventListener('click', async () => {
             const itemName = document.getElementById('itemName').value;
@@ -311,7 +365,9 @@
                 const response = await fetch(`/api/clubs/${clubId}/assets`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-Student-Id': studentId,
+                        'X-Club-Id': clubId
                     },
                     body: JSON.stringify({
                         item_name: itemName,
@@ -331,7 +387,13 @@
                     fetchAssets(); // 重新載入社產列表
                 } else {
                     const data = await response.json();
-                    alert(data.message || '新增失敗');
+                    if (response.status === 403) {
+                        alert('您沒有新增社產的權限');
+                        // 重新檢查權限並更新UI
+                        await fetchRoleId();
+                    } else {
+                        alert(data.message || '新增失敗');
+                    }
                 }
             } catch (error) {
                 console.error('新增失敗:', error);

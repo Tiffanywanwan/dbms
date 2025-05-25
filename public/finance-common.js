@@ -69,3 +69,52 @@ function authHeaders(extra = {}) {
         ...extra
     };
 }
+
+// 處理財務管理選單連結
+export function setupFinanceMenu() {
+    const clubId = getClubId();
+    const studentId = localStorage.getItem('studentId');
+
+    // 獲取所有財務管理相關的連結
+    const feeEditBtn = document.getElementById('menu-fee-edit');
+    const payRecBtn = document.getElementById('menu-pay-record');
+    const payStatusBtn = document.getElementById('menu-pay-status');
+    const feeOverviewLink = document.querySelector('a[href="fee-overview.html"]');
+    const personalPaymentLink = document.querySelector('a[href="personal-payment.html"]');
+
+    // 設定連結事件
+    if (feeEditBtn) {
+        feeEditBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = `fee-edit.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+        });
+    }
+
+    if (payRecBtn) {
+        payRecBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = `payment-record.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+        });
+    }
+
+    if (payStatusBtn) {
+        payStatusBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = `payment-status.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+        });
+    }
+
+    if (feeOverviewLink) {
+        feeOverviewLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = `fee-overview.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+        });
+    }
+
+    if (personalPaymentLink) {
+        personalPaymentLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = `personal-payment.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+        });
+    }
+}

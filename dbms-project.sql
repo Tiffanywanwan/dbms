@@ -255,6 +255,38 @@ INSERT INTO `role` (`role_id`, `role_name`) VALUES
 (4, '器材'),
 (5, '社員');
 
+INSERT INTO clubmember (`student_id`, `club_id`, `role_id`, `join_semester`) VALUES
+('111306001', 'C004', 1, '113-2'),
+('111306011', 'C004', 2, '113-2'),
+('112306065', 'C004', 5, '113-2'),
+('113306021', 'C004', 5, '113-2');
+
+
+-- 新增新的member 
+INSERT INTO member (`student_id`, `name`, `department`, `grade`, `phone`, `email`, `password`, `emergency_contact_name`, `emergency_contact_phone`, `diet`, `join_date`) VALUES
+('114306099', '張允甄', '資管系', '一', '0911000111', 'yunjhen@example.com', '114306099', '媽媽', '0933222111', '素', '2025-05-24');
+
+新增社員到阿瓦隆社
+
+-- 新增阿瓦隆社
+INSERT INTO club (`club_id`, `club_name`) VALUES
+('G001', '阿瓦隆社');
+
+-- 新增 clubmember 紀錄
+INSERT INTO clubmember (`student_id`, `club_id`, `role_id`, `join_semester`) VALUES
+('111306001', 'G001', 1, '113-2'), -- 社長
+('114306099', 'G001', 2, '113-2'), -- 副社長
+('112306065', 'G001', 3, '113-2'), -- 總務
+('113306021', 'G001', 4, '113-2'), -- 器材
+('110306001', 'G001', 5, '113-2'); -- 社員
+
+INSERT INTO permission (`club_id`, `role_id`, `can_view_all_pages`, `can_manage_member`, `can_manage_asset`, `can_manage_finance`, `can_manage_permission`) VALUES
+('G001', 1, 1, 1, 1, 0, 1),  -- 社長
+('G001', 2, 1, 1, 0, 0, 1),  -- 副社長
+('G001', 3, 1, 0, 0, 1, 0),  -- 總務
+('G001', 4, 1, 0, 1, 0, 0),  -- 器材
+('G001', 5, 0, 0, 0, 0, 0);  -- 社員
+
 DROP TABLE IF EXISTS `asset_borrow_log`;
 CREATE TABLE `asset_borrow_log` (
   `log_id` int NOT NULL AUTO_INCREMENT,
