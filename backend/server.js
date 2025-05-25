@@ -362,6 +362,120 @@ app.get('/api/member/list/:clubId', async (req, res) => {
 const financeRoutes = require('./routes/finance');
 app.use('/api', financeRoutes);
 
+// 取得社團所有社產列表
+app.get('/api/clubs/:clubId/assets', async (req, res) => {
+  const clubId = req.params.clubId;
+  try {
+    const [rows] = await db.query('SELECT * FROM asset_item WHERE club_id = ?', [clubId]);
+    res.json(rows);
+  } catch (err) {
+    console.error('查詢社產失敗：', err.message);
+    res.status(500).json({ message: '資料庫錯誤' });
+  }
+});
+
+// 取得社團所有借還記錄
+app.get('/api/clubs/:clubId/borrow-logs', async (req, res) => {
+  const clubId = req.params.clubId;
+  try {
+    const [rows] = await db.query(`
+      SELECT abl.*, ai.item_name, m.name as borrower_name
+      FROM asset_borrow_log abl
+      JOIN asset_item ai ON abl.item_id = ai.item_id
+      JOIN member m ON abl.borrower = m.student_id
+      WHERE ai.club_id = ?
+      ORDER BY abl.borrow_date DESC
+    `, [clubId]);
+    res.json(rows);
+  } catch (err) {
+    console.error('查詢借還記錄失敗：', err.message);
+    res.status(500).json({ message: '資料庫錯誤' });
+  }
+});
+
+// 借用社產
+app.post('/api/assets/:itemId/borrow', async (req, res) => {
+  const itemId = req.params.itemId;
+  const { borrower, note } = req.body;
+  try {
+    const [item] = await db.query('SELECT status FROM asset_item WHERE item_id = ?', [itemId]);
+    if (item[0].status !== '可借用') {
+      return res.status(400).json({ message: '此社產目前不可借用' });
+    }
+    await db.query(
+      'INSERT INTO asset_borrow_log (item_id, borrow_date, borrower, note) VALUES (?, CURDATE(), ?, ?)',
+      [itemId, borrower, note]
+    );
+    await db.query('UPDATE asset_item SET status = ? WHERE item_id = ?', ['不可借用', itemId]);
+    res.status(201).json({ message: '借用成功' });
+  } catch (err) {
+    console.error('借用社產失敗：', err.message);
+    res.status(500).json({ message: '借用失敗' });
+  }
+});
+
+// 歸還社產
+app.put('/api/assets/:itemId/return', async (req, res) => {
+  const itemId = req.params.itemId;
+  try {
+    await db.query(
+      'UPDATE asset_borrow_log SET return_date = CURDATE() WHERE item_id = ? AND return_date IS NULL',
+      [itemId]
+    );
+    await db.query('UPDATE asset_item SET status = ? WHERE item_id = ?', ['可借用', itemId]);
+    res.json({ message: '歸還成功' });
+  } catch (err) {
+    console.error('歸還社產失敗：', err.message);
+    res.status(500).json({ message: '歸還失敗' });
+  }
+});
+
+// 新增社產
+app.post('/api/clubs/:clubId/assets', async (req, res) => {
+  const clubId = req.params.clubId;
+  const { item_name, location, price, purchaser, note, status } = req.body;
+  try {
+    if (!item_name) {
+      return res.status(400).json({ message: '社產名稱為必填欄位' });
+    }
+    const [club] = await db.query('SELECT club_id FROM club WHERE club_id = ?', [clubId]);
+    if (club.length === 0) {
+      return res.status(404).json({ message: '找不到指定的社團' });
+    }
+    const [result] = await db.query(
+      `INSERT INTO asset_item (club_id, item_name, location, price, purchaser, note, status, purchase_date)
+       VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE())`,
+      [clubId, item_name, location || null, price || null, purchaser || null, note || null, status || '可借用']
+    );
+    res.status(201).json({ message: '社產新增成功', item_id: result.insertId });
+  } catch (err) {
+    console.error('新增社產失敗：', err.message);
+    if (err.code === 'ER_NO_REFERENCED_ROW_2') {
+      res.status(400).json({ message: '無效的社團ID' });
+    } else {
+      res.status(500).json({ message: '新增社產失敗' });
+    }
+  }
+});
+
+// 取得某會員在某社團的 role_id
+app.get('/api/members/:studentId/role', async (req, res) => {
+  const { studentId } = req.params;
+  const { clubId } = req.query;
+  try {
+    const [rows] = await db.query(
+      'SELECT role_id FROM ClubMember WHERE student_id = ? AND club_id = ?',
+      [studentId, clubId]
+    );
+    if (rows.length === 0) return res.status(404).json({ message: '找不到該社團成員' });
+    res.json({ role_id: rows[0].role_id });
+  } catch (err) {
+    res.status(500).json({ message: '查詢失敗' });
+  }
+});
+
+
+
 
 // 啟動伺服器
 app.listen(PORT, () => {
