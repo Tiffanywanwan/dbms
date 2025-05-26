@@ -157,6 +157,7 @@
     </div>
   </div>
 
+  <!-- ✨ 追加腳本：權限＋帶 from=club＋動態隱藏選單 -->
   <script type="module">
     /* 一次引入共用工具 */
     import {
@@ -189,67 +190,17 @@
     const feeEditBtn = document.getElementById('menu-fee-edit');
     const payRecBtn = document.getElementById('menu-pay-record');
     const payStatusBtn = document.getElementById('menu-pay-status');
-    const feeOverviewLink = document.querySelector('a[href="fee-overview.html"]');
-    const personalPaymentLink = document.querySelector('a[href="personal-payment.html"]');
-    const memberProfileLink = document.getElementById('member-profile-link');
-    const memberListLink = document.getElementById('member-list-link');
-    const roleManagementLink = document.getElementById('role-management-link');
-    const assetsLink = document.getElementById('assets-link');
-    const borrowLogsLink = document.getElementById('borrow-logs-link');
 
-    // 財務管理相關連結
-    feeEditBtn && feeEditBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.href = `fee-edit.html?clubId=${clubId}&student_id=${studentId}&from=club`;
-    });
+    feeEditBtn && feeEditBtn.addEventListener('click', () =>
+      navigateWithClubId('fee-edit.html?from=club'));
 
-    payRecBtn && payRecBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.href = `payment-record.html?clubId=${clubId}&student_id=${studentId}&from=club`;
-    });
+    payRecBtn && payRecBtn.addEventListener('click', () =>
+      navigateWithClubId('payment-record.html?from=club'));
 
-    payStatusBtn && payStatusBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.href = `payment-status.html?clubId=${clubId}&student_id=${studentId}&from=club`;
-    });
-
-    feeOverviewLink && feeOverviewLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.href = `fee-overview.html?clubId=${clubId}&student_id=${studentId}&from=club`;
-    });
-
-    personalPaymentLink && personalPaymentLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.href = `personal-payment.html?clubId=${clubId}&student_id=${studentId}&from=club`;
-    });
-
-    // 社員管理相關連結
-    memberProfileLink && memberProfileLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.href = `member-profile.html?clubId=${clubId}&student_id=${studentId}&from=club`;
-    });
-
-    memberListLink && memberListLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.href = `member-list.html?clubId=${clubId}&student_id=${studentId}&from=club`;
-    });
-
-    roleManagementLink && roleManagementLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.href = `role-management.html?clubId=${clubId}&student_id=${studentId}&from=club`;
-    });
-
-    // 社產管理相關連結
-    assetsLink && assetsLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.href = `assets.html?clubId=${clubId}&student_id=${studentId}&from=club`;
-    });
-
-    borrowLogsLink && borrowLogsLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.location.href = `borrow-logs.html?clubId=${clubId}&student_id=${studentId}&from=club`;
-    });
+    payStatusBtn && payStatusBtn.addEventListener('click', () =>
+      navigateWithClubId('payment-status.html?from=club'));
   </script>
+
 </body>
 
 </html>
