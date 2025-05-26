@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-  
+
 <head>
   <meta charset="UTF-8" />
   <title>社團資訊頁</title>
@@ -22,10 +22,11 @@
       text-decoration: none;
       color: #000000;
     }
+
     .menu-item:hover {
       background-color: #e5e7eb;
     }
-    
+
     /* 下拉選單連結樣式 */
     #menu-member a,
     #menu-asset a,
@@ -33,14 +34,13 @@
       text-decoration: none;
       color: #000000;
     }
-    
+
     #menu-member a:hover,
     #menu-asset a:hover,
     #menu-finance a:hover {
       text-decoration: none;
       color: #000000;
     }
-  
   </style>
 </head>
 
@@ -85,8 +85,10 @@
           <i class="bi bi-box-seam mr-2"></i>社產管理
         </div>
         <div id="menu-asset" class="hidden absolute bg-white border shadow-lg mt-2 rounded z-10 w-64">
-          <a href="assets.html" class="block px-4 py-2 hover:bg-blue-50" id="assetsLink"><i class="bi bi-archive-fill mr-2"></i>社產列表</a>
-          <a href="borrow-logs.html" class="block px-4 py-2 hover:bg-blue-50" id="borrowLogsLink"><i class="bi bi-journal-check mr-2"></i>借還記錄</a>
+          <a href="assets.html" class="block px-4 py-2 hover:bg-blue-50" id="assetsLink"><i
+              class="bi bi-archive-fill mr-2"></i>社產列表</a>
+          <a href="borrow-logs.html" class="block px-4 py-2 hover:bg-blue-50" id="borrowLogsLink"><i
+              class="bi bi-journal-check mr-2"></i>借還記錄</a>
         </div>
       </div>
 
@@ -116,7 +118,8 @@
       </div>
     </div>
   </div>
-  </body>
+</body>
+
 <head>
   <meta charset="UTF-8" />
   <title>會員個人資料</title>
@@ -124,22 +127,118 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
 </head>
+
 <body class="bg-blue-50 min-h-screen p-8">
   <div class="max-w-6xl mx-auto mt-6 mb-10 bg-white shadow-md rounded-xl p-8">
-    
+
     <!-- 基本資料 -->
     <div>
       <h1 class="text-2xl font-bold mb-4 text-blue-700"><i class="bi bi-person-circle mr-2"></i>基本資料</h2>
-      <div id="profile" class="mt-2 space-y-1 text-gray-700"></div>
+        <div id="profile" class="mt-2 space-y-1 text-gray-700"></div>
     </div>
 
     <!-- 加入社團紀錄 -->
     <div>
       <h1 class="text-2xl font-bold mb-4 text-blue-700"></i> </h2>
-      <h1 class="text-2xl font-bold mb-4 text-blue-700"><i class="bi bi-journal-text mr-2"></i>社團紀錄</h2>
-      <ul id="club-history" class="mt-2 list-disc pl-6 text-gray-700"></ul>
+        <h1 class="text-2xl font-bold mb-4 text-blue-700"><i class="bi bi-journal-text mr-2"></i>社團紀錄</h2>
+          <ul id="club-history" class="mt-2 list-disc pl-6 text-gray-700"></ul>
     </div>
 
   </div>
+
+  <script type="module">
+    /* 一次引入共用工具 */
+    import {
+      navigateWithClubId,
+      apiGet,
+      getClubId
+    } from './finance-common.js';
+
+    /* -------------------------------------------------- 抓權限 */
+    const clubId = getClubId();
+    const studentId = localStorage.getItem('studentId');
+
+    let canFinance = false;
+    try {
+      const perm = await apiGet(`/member/role-permission/${clubId}/${studentId}`);
+      canFinance = perm.can_manage_finance;
+      if (!canFinance) {
+        /* 只留下「個人繳費紀錄」；其餘按鈕移除 */
+        document.querySelectorAll('#menu-finance a')
+          .forEach(a => {
+            if (!a.href.includes('personal-payment.html')) a.remove();
+          });
+      }
+    } catch (e) {
+      console.error('[club] permission fail:', e);
+    }
+
+    /* -------------------------------------------------- 綁定事件
+         （若剛才被移除就不會綁到）                           */
+    const feeEditBtn = document.getElementById('menu-fee-edit');
+    const payRecBtn = document.getElementById('menu-pay-record');
+    const payStatusBtn = document.getElementById('menu-pay-status');
+    const feeOverviewLink = document.querySelector('a[href="fee-overview.html"]');
+    const personalPaymentLink = document.querySelector('a[href="personal-payment.html"]');
+    const memberProfileLink = document.getElementById('member-profile-link');
+    const memberListLink = document.getElementById('member-list-link');
+    const roleManagementLink = document.getElementById('role-management-link');
+    const assetsLink = document.getElementById('assets-link');
+    const borrowLogsLink = document.getElementById('borrow-logs-link');
+
+    // 財務管理相關連結
+    feeEditBtn && feeEditBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `fee-edit.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
+
+    payRecBtn && payRecBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `payment-record.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
+
+    payStatusBtn && payStatusBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `payment-status.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
+
+    feeOverviewLink && feeOverviewLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `fee-overview.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
+
+    personalPaymentLink && personalPaymentLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `personal-payment.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
+
+    // 社員管理相關連結
+    memberProfileLink && memberProfileLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `member-profile.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
+
+    memberListLink && memberListLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `member-list.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
+
+    roleManagementLink && roleManagementLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `role-management.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
+
+    // 社產管理相關連結
+    assetsLink && assetsLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `assets.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
+
+    borrowLogsLink && borrowLogsLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `borrow-logs.html?clubId=${clubId}&student_id=${studentId}&from=club`;
+    });
+  </script>
 </body>
+
 </html>
